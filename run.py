@@ -26,7 +26,10 @@ if __name__ == "__main__":
     __C.add_args(args_dict)
     
     __C.proc()
+<<<<<<< HEAD
     
     execution = Execution(__C)
+=======
+>>>>>>> 52ab7767b5d684d991d0a02c755cca67b0e56091
 
     

@@ -40,7 +40,13 @@ class Configs(PATH):
     def proc(self):
         assert self.RUN_MODE in ['train','val','test']
 
+<<<<<<< HEAD
         if len(os.listdir(self.DATASET_PATH)) == 0:
             # Padding datasets
             preprocess(self.RAW_PATH,self.DATASET_PATH)
+=======
+        if len(os.listdir(self.PADDING_PATH)) == 0:
+            # Padding datasets
+            padding_datasets(self,self.RAW_PATH,self.PADDING_PATH)
+>>>>>>> 52ab7767b5d684d991d0a02c755cca67b0e56091
 
