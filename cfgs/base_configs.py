@@ -2,6 +2,7 @@ import os, torch, random
 import numpy as np 
 from types import MethodType
 from cfgs.path_configs import PATH
+from core.utils.preprocess import preprocess
 
 class Configs(PATH):
     def __init__(self):
@@ -26,6 +27,20 @@ class Configs(PATH):
     def parse_to_dict(self,args):
         args_dict = {}
         for arg in dir(args):
-            print(arg)
+            if not arg.startswith('__') and not isinstance(getattr(args,arg) , MethodType):
+                if getattr(args , arg) is not None:
+                    args_dict[arg] = getattr(args,arg)
 
+        return args_dict
+
+    def add_args(self,args_dict):
+        for arg in args_dict:
+            setattr(self,arg, args_dict[arg])
     
+    def proc(self):
+        assert self.RUN_MODE in ['train','val','test']
+
+        if len(os.listdir(self.DATASET_PATH)) == 0:
+            # Padding datasets
+            preprocess(self.RAW_PATH,self.DATASET_PATH)
+

@@ -1,7 +1,8 @@
 from cfgs.base_configs import Configs
-import numpy as n
+import numpy as np
 import argparse
-from core.utils.preprocess import padding_datasets
+import os
+from core.exec import  Execution
 
 def parse_args():
     """
@@ -20,4 +21,12 @@ if __name__ == "__main__":
     __C = Configs()
     args = parse_args()
     
-    __C.parse_to_dict(args)
+    args_dict = __C.parse_to_dict(args)
+    
+    __C.add_args(args_dict)
+    
+    __C.proc()
+    
+    execution = Execution(__C)
+
+    
