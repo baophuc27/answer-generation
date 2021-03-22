@@ -8,7 +8,7 @@ def add_padding(C__,input_file,output_file):
             outline ="<s> " + " ".join(line.strip().split(' ')) + " </s> "+padding+"\n"
             out_f.write(outline)
 
-def padding_datasets(raw_path, padded_path):
+def padding_datasets(C__,raw_path, padded_path):
     for data in os.listdir(raw_path):
         filename,data_type = data.split('.')
         padded_item = os.path.join(padded_path,filename+"_padded."+data_type)

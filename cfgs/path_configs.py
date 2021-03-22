@@ -2,9 +2,9 @@ import os
 
 class PATH:
     def __init__(self):
-        self.RAW_DATASET = './datasets/raw'
-
-        self.DATASET_PATH = './datasets/processed'
+        self.RAW_PATH = './datasets/raw/'
+        self.PADDING_PATH = './datasets/padded/'
+        self.DATASET_PATH = './datasets/processed/'
 
     def init_path(self):
         self.PRED_PATH = './results/pred/'
