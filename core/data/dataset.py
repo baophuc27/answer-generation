@@ -1,7 +1,7 @@
 import numpy as np
 import json, torch, time
 from torch.utils import data
-from core.data.utils import tokenize
+from core.data.utils import tokenize,process_data
 
 
 class Dataset(data.Dataset):
@@ -24,6 +24,23 @@ class Dataset(data.Dataset):
         print('== Question token vocab size:', self.token_size)
     
     def __getitem__(self,idx):
+        ques_feat_iter = np.zeros(1)
+        ans_feat_iter = np.zeros(1)
+        tgt_feat_iter = np.zeros(1)
+        
+        ans = self.ans_list[idx]
+        ques = self.ques_list[idx]
+        tgt = self.tgt_list[idx]
+        
+        ques_feat_iter = process_data(list(ques.values())[0], self.token_to_ix, self.__C.PADDING_TOKEN)
+        ans_feat_iter = process_data(list(ans.values())[0], self.token_to_ix, self.__C.PADDING_TOKEN)
+        tgt_feat_iter = process_data(list(tgt.values())[0], self.token_to_ix, self.__C.PADDING_TOKEN)
+
+        return torch.from_numpy(ques_feat_iter), \
+               torch.from_numpy(ans_feat_iter), \
+               torch.from_numpy(tgt_feat_iter) 
+
+
 
     def __len__(self):
         return self.data_size
