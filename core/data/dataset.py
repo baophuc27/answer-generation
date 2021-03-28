@@ -1,8 +1,8 @@
 import numpy as np
 import json, torch, time
 from torch.utils import data
-from core.data.utils import tokenize,process_data
-
+from core.data.utils import get_pretrained_emb,process_data
+from core.data.vocab import Vocab
 
 class Dataset(data.Dataset):
 
@@ -14,14 +14,13 @@ class Dataset(data.Dataset):
         self.tgt_list = json.load(open(__C.TARGET_PATH[__C.RUN_MODE],'r'))['targets']
 
         self.data_size = self.ques_list.__len__()
-
-        self.all_sent_list = self.ques_list + self.tgt_list
         print("Dataset size: ",self.data_size)
-        self.token_to_ix,self.pretrained_emb = tokenize(self.all_sent_list)
 
-
-        self.token_size = self.token_to_ix.__len__()
-        print('== Question token vocab size:', self.token_size)
+        # Initialize vocab
+        all_sent_list = self.ques_list + self.tgt_list
+        self.vocab = Vocab(all_sent_list)
+        self.pretrained_emb = get_pretrained_emb(self.vocab.ix_to_token)
+        
     
     def __getitem__(self,idx):
         ques_feat_iter = np.zeros(1)
@@ -32,9 +31,9 @@ class Dataset(data.Dataset):
         ques = self.ques_list[idx]
         tgt = self.tgt_list[idx]
         
-        ques_feat_iter = process_data(list(ques.values())[0], self.token_to_ix, self.__C.PADDING_TOKEN)
-        ans_feat_iter = process_data(list(ans.values())[0], self.token_to_ix, self.__C.PADDING_TOKEN)
-        tgt_feat_iter = process_data(list(tgt.values())[0], self.token_to_ix, self.__C.PADDING_TOKEN)
+        ques_feat_iter = process_data(list(ques.values())[0], self.vocab.token_to_ix, self.__C.PADDING_TOKEN)
+        ans_feat_iter = process_data(list(ans.values())[0], self.vocab.token_to_ix, self.__C.PADDING_TOKEN)
+        tgt_feat_iter = process_data(list(tgt.values())[0], self.vocab.token_to_ix, self.__C.PADDING_TOKEN)
 
         return torch.from_numpy(ques_feat_iter), \
                torch.from_numpy(ans_feat_iter), \
