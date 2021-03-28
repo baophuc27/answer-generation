@@ -34,5 +34,5 @@ def convert_to_json(input_file,output_file, data_type):
     with open(input_file,'r') as f, open(output_file, "w") as out_f:
         for ix,line in enumerate(f):
             data[data_type].append({ix: line[:-2]})
-        json.dump(data,out_f)
+        json.dump(data,out_f,ensure_ascii=False)
 

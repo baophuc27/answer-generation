@@ -18,12 +18,24 @@ class Configs(PATH):
         # --------------- MODEL PARAM ----------------------
         # --------------------------------------------------
 
-        self.WORD_EMBED_SIZE = 768
+        self.WORD_EMBED_SIZE = 300
 
-        self.PADDING_TOKEN = 30
+        self.QUES_PADDING_TOKEN = 30
 
         self.BATCH_SIZE = 128
-    
+
+        self.ANS_PADDING_TOKEN = 10
+
+        self.ENCODER_LSTM_LAYERS = 3
+
+        self.ENCODER_HIDDEN_DIM = 256
+
+        self.BIDIRECTIONAL_LSTM = True
+
+        self.DECODER_HIDDEN_DIM = 256
+
+        self.DROPOUT_RATE = 0.3
+
     def parse_to_dict(self,args):
         args_dict = {}
         for arg in dir(args):
@@ -44,3 +56,9 @@ class Configs(PATH):
             # Padding datasets
             preprocess(self.RAW_PATH,self.DATASET_PATH)
 
+    def __str__(self):
+        for attr in dir(self):
+            if not attr.startswith('__') and not isinstance(getattr(self, attr), MethodType):
+                print('{ %-17s }->' % attr, getattr(self, attr))
+
+        return ''

@@ -26,7 +26,8 @@ if __name__ == "__main__":
     __C.add_args(args_dict)
     
     __C.proc()
-    
+    print('Hyper parameters: ')
+    print(__C)
     execution = Execution(__C)
 
     execution.train()

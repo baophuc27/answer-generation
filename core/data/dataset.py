@@ -31,9 +31,11 @@ class Dataset(data.Dataset):
         ques = self.ques_list[idx]
         tgt = self.tgt_list[idx]
         
-        ques_feat_iter = process_data(list(ques.values())[0], self.vocab.token_to_ix, self.__C.PADDING_TOKEN)
-        ans_feat_iter = process_data(list(ans.values())[0], self.vocab.token_to_ix, self.__C.PADDING_TOKEN)
-        tgt_feat_iter = process_data(list(tgt.values())[0], self.vocab.token_to_ix, self.__C.PADDING_TOKEN)
+        ans_feat_iter = process_data(list(ans.values())[0], self.vocab.token_to_ix, self.__C.ANS_PADDING_TOKEN)
+        ques_feat_iter = process_data(list(ques.values())[0], self.vocab.token_to_ix, self.__C.QUES_PADDING_TOKEN)
+        tgt_feat_iter = process_data(list(tgt.values())[0], self.vocab.token_to_ix, self.__C.QUES_PADDING_TOKEN)
+        
+        
 
         return torch.from_numpy(ques_feat_iter), \
                torch.from_numpy(ans_feat_iter), \

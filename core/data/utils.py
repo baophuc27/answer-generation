@@ -25,3 +25,6 @@ def process_data(ques,token_to_ix,max_token):
             break
     
     return data_idx
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
