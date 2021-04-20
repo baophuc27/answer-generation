@@ -7,7 +7,7 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 from core.model.encoder.encoder_base import EncoderBase
 
-class EncoderLSTM(EncoderBase):
+class EncoderRNN(EncoderBase):
     """ Option 1: Encoder module uses LSTM as a baseline
 
     Args:
@@ -18,10 +18,8 @@ class EncoderLSTM(EncoderBase):
     def __init__(self,pretrained_emb,__C):
         super(EncoderBase,self).__init__()
         assert pretrained_emb is not None
-        self.__C= __C
         self.embedding = nn.Embedding.from_pretrained(pretrained_emb)
-        self.embedding.weight.requires_grad = False
-            
+        
         num_directions = 2 if __C.BIDIRECTIONAL_LSTM else 1
 
         self.lstm_ques = nn.LSTM(input_size=__C.WORD_EMBED_SIZE,
@@ -49,27 +47,18 @@ class EncoderLSTM(EncoderBase):
         answer_embedding = self.embedding(answer)
 
         outputs_question , (hidden_question,cell_question) = self.lstm_ques(question_embedding)
-        
+
         outputs_answer , (hidden_answer,cell_answer) = self.lstm_ans(answer_embedding)
 
         #outputs = [src len, batch size, hid dim * n directions]
         #hidden = [n layers * n directions, batch size, hid dim]
         #cell = [n layers * n directions, batch size, hid dim]
 
-        outputs = torch.cat([outputs_question,outputs_answer],1).contiguous()
+        outputs = torch.cat([outputs_question,outputs_answer],1)
 
-        hidden = torch.cat([hidden_question,hidden_answer],1).contiguous()
+        hidden = torch.cat([hidden_question,hidden_answer],1)
         
-        cell = torch.cat([cell_question,cell_answer],1).contiguous()
+        cell = torch.cat([cell_question,cell_answer],1)
 
-        outputs = outputs.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
-
-        hidden = hidden.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
-
-        cell = cell.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
-
-        # outputs = outputs.permute((2,1,0))
-        # hidden= hidden.permute((2,1,0))
-        # cell = cell.permute((2,1,0))
         return outputs, hidden,cell
         

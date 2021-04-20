@@ -1,10 +1,10 @@
 import numpy as np
 import json, torch, time
 from torch.utils import data
-from core.data.utils import get_pretrained_emb,process_data
+from core.data.utils import get_pretrained_emb,process_data,insert_sentence_token
 from core.data.vocab import Vocab
 
-class Dataset(data.Dataset):
+class MyDataset(data.Dataset):
 
     def __init__(self,__C):
         self.__C = __C
@@ -19,6 +19,9 @@ class Dataset(data.Dataset):
         # Initialize vocab
         all_sent_list = self.ques_list + self.tgt_list
         self.vocab = Vocab(all_sent_list)
+        assert self.vocab.vocab_size() > 0
+        setattr(__C,'VOCAB_SIZE',self.vocab.vocab_size())
+
         self.pretrained_emb = get_pretrained_emb(self.vocab.ix_to_token)
         
     
@@ -35,7 +38,8 @@ class Dataset(data.Dataset):
         ques_feat_iter = process_data(list(ques.values())[0], self.vocab.token_to_ix, self.__C.QUES_PADDING_TOKEN)
         tgt_feat_iter = process_data(list(tgt.values())[0], self.vocab.token_to_ix, self.__C.QUES_PADDING_TOKEN)
         
-        
+        ques_feat_iter = insert_sentence_token(ques_feat_iter,self.vocab.token_to_ix)
+        tgt_feat_iter = insert_sentence_token(ans_feat_iter,self.vocab.token_to_ix)
 
         return torch.from_numpy(ques_feat_iter), \
                torch.from_numpy(ans_feat_iter), \

@@ -22,19 +22,33 @@ class Configs(PATH):
 
         self.QUES_PADDING_TOKEN = 30
 
-        self.BATCH_SIZE = 128
+        self.BATCH_SIZE = 17
 
         self.ANS_PADDING_TOKEN = 10
 
-        self.ENCODER_LSTM_LAYERS = 3
+        self.ENCODER_LSTM_LAYERS = 1
 
         self.ENCODER_HIDDEN_DIM = 256
 
-        self.BIDIRECTIONAL_LSTM = True
+        self.BIDIRECTIONAL_LSTM = False
 
         self.DECODER_HIDDEN_DIM = 256
 
         self.DROPOUT_RATE = 0.3
+
+        self.MIN_OCCURRENCE_VOCAB = 3
+
+        self.NUM_WORKERS = 3 
+
+        self.PIN_MEMORY = True
+
+        self.MAX_EPOCH = 10
+
+        self.DECODER_LSTM_LAYERS = 1
+
+        self.DECODER_HIDDEN_DIM = 512
+
+        self.IS_COVERAGE = True
 
     def parse_to_dict(self,args):
         args_dict = {}

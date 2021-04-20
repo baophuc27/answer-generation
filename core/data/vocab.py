@@ -1,37 +1,44 @@
 import numpy as np
 import re
+from collections import Counter
+
 
 SENTENCE_START = '<s>'
 SENTENCE_END = '</s>'
 
-PAD_TOKEN = '[PAD]' # This has a vocab id, which is used to pad the encoder input, decoder input and target sequence
-UNKNOWN_TOKEN = '[UNK]' # This has a vocab id, which is used to represent out-of-vocabulary words
-START_DECODING = '[START]' # This has a vocab id, which is used at the start of every decoder input sequence
-STOP_DECODING = '[STOP]' # This has a vocab id, which is used at the end of untruncated target sequences
+PAD_TOKEN = '<pad>' # This has a vocab id, which is used to pad the encoder input, decoder input and target sequence
+UNKNOWN_TOKEN = '<unk>' # This has a vocab id, which is used to represent out-of-vocabulary words
+START_DECODING = '<eos>' # This has a vocab id, which is used at the start of every decoder input sequence
+STOP_DECODING = '<sos>' # This has a vocab id, which is used at the end of untruncated target sequences
 
 
 class Vocab(object):
     def __init__(self,sentences):
         self.token_to_ix = {}
         self.ix_to_token = {}
-        self._count = 0
 
-        for token in [PAD_TOKEN,UNKNOWN_TOKEN,START_DECODING,STOP_DECODING]:
-            self.token_to_ix[token] = self._count
-            self.ix_to_token[self._count] = token
-            self._count +=1
+        total_tokens = []   
         
         for item in sentences:
             sent = list(item.values())[0]
             tokens = re.sub(
-                    r"([.,'!?\"()*#:;])",'',
+                    r"([.,'!\"()*#:;])",'',
                     sent.lower()
                     ).replace('-', ' ').replace('/', ' ').split()
             for token in tokens:
-                if token not in self.token_to_ix:
-                    self.token_to_ix[token] = self._count
-                    self.ix_to_token[self._count] = token
-                    self._count += 1
+                total_tokens.append(token)
+
+        counter = Counter(total_tokens)
+        # Only token with at least 10 occurrences can be in vocab
+        filter_tokens =  list(filter(lambda x : counter[x] > 10 , counter))
+        for token in [STOP_DECODING,START_DECODING,PAD_TOKEN,UNKNOWN_TOKEN]:
+            filter_tokens.insert(0,token)
+
+        for ix,token in enumerate(filter_tokens):
+            self.token_to_ix[token] = ix
+            self.ix_to_token[ix] = token
+        self._count = len(self.token_to_ix)
+
         print("=== Total vocab size: ",str(self._count))
 
     def token_to_ix(token):
@@ -46,7 +53,9 @@ class Vocab(object):
         return self.ix_to_token[ix]
     
     def vocab_size(self):
-        return self._count + 1
-        
+        return self._count
+    
+    def __len__(self):
+        return self._count
 
 

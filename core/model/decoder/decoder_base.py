@@ -3,21 +3,20 @@ import torch.nn as nn
 
 class DecoderBase(nn.Module):
     @abstractmethod
-    def __init__(self,__C):
+    def __init__(self):
         """ Base decoder module for inheritation.
 
         Args:
             __C (object): Config object
         """
         super(DecoderBase,self).__init__()
-        self.__C = __C
 
     @abstractmethod
-    def forward(self,embedding):
+    def forward(self, input, hidden,cell):
         """Base decoder in full answer generation
 
         Args:
-            embedding ([Tensor]): Features after decoder module
+            context ([Tensor]): Features after decoder module
 
         Raises:
             NotImplementedError
