@@ -8,8 +8,9 @@ class Configs(PATH):
     def __init__(self):
         super(Configs,self).__init__()
 
-        self.GPU = '0'
+        self.GPU = [0,1,2,3]
 
+        self.GPU_STR = '0,1,2,3'
         self.SEED = random.randint(0,9999999)
 
         self.VERSION = str(self.SEED)
@@ -22,17 +23,15 @@ class Configs(PATH):
 
         self.QUES_PADDING_TOKEN = 30
 
-        self.BATCH_SIZE = 17
+        self.BATCH_SIZE = 128
 
         self.ANS_PADDING_TOKEN = 10
 
-        self.ENCODER_LSTM_LAYERS = 1
+        self.ENCODER_LSTM_LAYERS = 3
 
-        self.ENCODER_HIDDEN_DIM = 256
+        self.ENCODER_HIDDEN_DIM = 512
 
-        self.BIDIRECTIONAL_LSTM = False
-
-        self.DECODER_HIDDEN_DIM = 256
+        self.BIDIRECTIONAL_LSTM = True
 
         self.DROPOUT_RATE = 0.3
 
@@ -44,12 +43,16 @@ class Configs(PATH):
 
         self.MAX_EPOCH = 10
 
-        self.DECODER_LSTM_LAYERS = 1
+        self.DECODER_LSTM_LAYERS = 3
 
         self.DECODER_HIDDEN_DIM = 512
 
         self.IS_COVERAGE = True
 
+        self.OPT_BETAS = (0.9, 0.98)
+
+        self.OPT_EPS = 1e-9
+        
     def parse_to_dict(self,args):
         args_dict = {}
         for arg in dir(args):
@@ -66,6 +69,8 @@ class Configs(PATH):
     def proc(self):
         assert self.RUN_MODE in ['train','val','test']
 
+        os.environ['CUDA_VISIBLE_DEVICES'] = self.GPU_STR
+        torch.backends.cudnn.deterministic = True
         if len(os.listdir(self.DATASET_PATH)) == 0:
             # Padding datasets
             preprocess(self.RAW_PATH,self.DATASET_PATH)

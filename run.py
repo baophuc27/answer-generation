@@ -30,4 +30,4 @@ if __name__ == "__main__":
     print(__C)
     execution = Execution(__C)
 
-    execution.train()
+    execution.run(__C.RUN_MODE)

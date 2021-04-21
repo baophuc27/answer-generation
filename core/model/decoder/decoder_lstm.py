@@ -15,15 +15,18 @@ class DecoderLSTM(DecoderBase):
         super(DecoderLSTM,self).__init__()
         self.__C = __C
         self.embedding = nn.Embedding.from_pretrained(pretrained_embedding)
+        self.embedding.cuda()
+
+        num_directions = 2 if self.__C.BIDIRECTIONAL_LSTM else 1
         if self.__C.DROPOUT_RATE:
             self.dropout = nn.Dropout(self.__C.DROPOUT_RATE)
         self.lstm = nn.LSTM(input_size=__C.WORD_EMBED_SIZE,
-                            hidden_size=__C.DECODER_HIDDEN_DIM,
+                            hidden_size=2*self.__C.ENCODER_HIDDEN_DIM,
                             num_layers=__C.DECODER_LSTM_LAYERS,
                             batch_first=False,
                             bidirectional=__C.BIDIRECTIONAL_LSTM)
 
-        self.combined_size = self.__C.DECODER_HIDDEN_DIM
+        self.combined_size = 2*self.__C.ENCODER_HIDDEN_DIM*num_directions
         self.cover_weight = nn.Parameter(torch.rand(1))
         self.pointer = nn.Linear(self.combined_size,1)
 

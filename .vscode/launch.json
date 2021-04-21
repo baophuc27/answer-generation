@@ -7,7 +7,7 @@
 
 
         {
-            "args": ["--RUN","train"],
+            "args": ["--RUN","test"],
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",

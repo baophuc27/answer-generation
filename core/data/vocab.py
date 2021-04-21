@@ -41,13 +41,13 @@ class Vocab(object):
 
         print("=== Total vocab size: ",str(self._count))
 
-    def token_to_ix(token):
+    def get_token_to_ix(self,token):
         if token in self.token_to_ix:
             return self.token_to_ix[token]
         else:
             return self.token_to_ix[UNKNOWN_TOKEN]
     
-    def ix_to_token(ix):
+    def get_ix_to_token(self,ix):
         if ix not in self.ix_to_token:
             raise ValueError("Invalid index")
         return self.ix_to_token[ix]

@@ -21,7 +21,7 @@ class EncoderLSTM(EncoderBase):
         self.__C= __C
         self.embedding = nn.Embedding.from_pretrained(pretrained_emb)
         self.embedding.weight.requires_grad = False
-            
+        self.embedding.cuda()
         num_directions = 2 if __C.BIDIRECTIONAL_LSTM else 1
 
         self.lstm_ques = nn.LSTM(input_size=__C.WORD_EMBED_SIZE,
@@ -37,14 +37,14 @@ class EncoderLSTM(EncoderBase):
                                 batch_first=True,
                                 bidirectional=__C.BIDIRECTIONAL_LSTM)
 
-        self.fc = nn.Linear(in_features=__C.ENCODER_HIDDEN_DIM*num_directions + __C.ENCODER_HIDDEN_DIM*num_directions
-                            ,out_features=__C.DECODER_HIDDEN_DIM)
+        # self.fc = nn.Linear(in_features=__C.ENCODER_HIDDEN_DIM*num_directions + __C.ENCODER_HIDDEN_DIM*num_directions
+        #                     ,out_features=__C.DECODER_HIDDEN_DIM)
         
         self.dropout = nn.Dropout(p=__C.DROPOUT_RATE)
 
     def forward(self,question,answer):
-        # question = [question_token_len, batch_size]
-        # answer = [answer_token_len, batch_size]
+        # question.cuda()
+        # answer.cuda()
         question_embedding = self.embedding(question)
         answer_embedding = self.embedding(answer)
 
@@ -56,20 +56,17 @@ class EncoderLSTM(EncoderBase):
         #hidden = [n layers * n directions, batch size, hid dim]
         #cell = [n layers * n directions, batch size, hid dim]
 
-        outputs = torch.cat([outputs_question,outputs_answer],1).contiguous()
+        # outputs = torch.cat([outputs_question,outputs_answer],2).contiguous()
 
-        hidden = torch.cat([hidden_question,hidden_answer],1).contiguous()
+        hidden = torch.cat([hidden_question,hidden_answer],2).contiguous()
         
-        cell = torch.cat([cell_question,cell_answer],1).contiguous()
+        cell = torch.cat([cell_question,cell_answer],2).contiguous()
 
-        outputs = outputs.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
+        # outputs = outputs.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
 
-        hidden = hidden.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
+        # hidden = hidden.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
 
-        cell = cell.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
+        # cell = cell.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
 
-        # outputs = outputs.permute((2,1,0))
-        # hidden= hidden.permute((2,1,0))
-        # cell = cell.permute((2,1,0))
-        return outputs, hidden,cell
+        return (hidden,cell)
         
