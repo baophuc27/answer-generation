@@ -2,3 +2,4 @@ en_vectors_web_lg-2.1.0.tar.gz
 datasets/
 core/data/__pycache__
 */__pycache__/*
+ckpts/
