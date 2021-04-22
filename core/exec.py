@@ -27,6 +27,8 @@ class Execution():
         net = Net(encoder,decoder,vocab)
         print("=== Total model parameters: ",count_parameters(net))
 
+        data_size = len(self.dataset)
+
         net.train()
         net.cuda()
 
@@ -86,7 +88,8 @@ class Execution():
                 '/epoch' + str(epoch_finish) +
                 '.pkl'
             )
-
+            print('Loss of epoch %2d :%.4f' % (epoch_finish,loss_epoch*self.__C.BATCH_SIZE/data_size))
+            
     def infer(self):
         pretrained_emb = torch.FloatTensor(self.dataset.pretrained_emb)
         vocab = self.dataset.vocab
