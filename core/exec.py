@@ -30,7 +30,7 @@ class Execution():
         net.train()
         net.cuda()
 
-        net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
+        # net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
 
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, net.parameters()),
@@ -96,7 +96,7 @@ class Execution():
         net = Net(encoder,decoder,vocab)
         print("=== Total model parameters: ",count_parameters(net))
         state_dict_path = '/home/phuc/Workspace/Thesis/answer-generation/ckpts/ckpt_9177283/epoch10.pkl'
-        net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
+        # net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
         state_dict = torch.load(state_dict_path)
         net.load_state_dict(torch.load(state_dict_path))
         net.eval()

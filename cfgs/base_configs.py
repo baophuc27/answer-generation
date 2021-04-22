@@ -23,7 +23,7 @@ class Configs(PATH):
 
         self.QUES_PADDING_TOKEN = 30
 
-        self.BATCH_SIZE = 128
+        self.BATCH_SIZE = 256
 
         self.ANS_PADDING_TOKEN = 10
 
