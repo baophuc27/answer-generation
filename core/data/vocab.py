@@ -6,10 +6,10 @@ from collections import Counter
 SENTENCE_START = '<s>'
 SENTENCE_END = '</s>'
 
-PAD_TOKEN = '<pad>' # This has a vocab id, which is used to pad the encoder input, decoder input and target sequence
-UNKNOWN_TOKEN = '<unk>' # This has a vocab id, which is used to represent out-of-vocabulary words
-START_DECODING = '<eos>' # This has a vocab id, which is used at the start of every decoder input sequence
-STOP_DECODING = '<sos>' # This has a vocab id, which is used at the end of untruncated target sequences
+PAD_TOKEN = '[PAD]' # This has a vocab id, which is used to pad the encoder input, decoder input and target sequence
+UNKNOWN_TOKEN = '[UNK]' # This has a vocab id, which is used to represent out-of-vocabulary words
+START_DECODING = '[START]' # This has a vocab id, which is used at the start of every decoder input sequence
+STOP_DECODING = '[STOP]' # This has a vocab id, which is used at the end of untruncated target sequences
 
 
 class Vocab(object):

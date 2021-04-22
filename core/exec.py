@@ -7,10 +7,10 @@ import os
 
 from core.data.dataset import MyDataset
 from torch.utils.data import DataLoader,Dataset
-from core.model.net import Net
+from core.model.net.pgn import PointerGenerator
 from core.model.encoder.encoder_lstm import EncoderLSTM
-from core.model.decoder.decoder_base import DecoderBase
 from core.model.decoder.decoder_lstm import DecoderLSTM
+from core.model.decoder.decoder_pgn import DecoderAttention
 from core.data.utils import count_parameters
 from core.model.opt import WarmupOptimizer
 class Execution():
@@ -22,9 +22,9 @@ class Execution():
         pretrained_emb = torch.FloatTensor(self.dataset.pretrained_emb)
         vocab = self.dataset.vocab
         encoder = EncoderLSTM(pretrained_emb,self.__C)
-        decoder = DecoderLSTM(self.__C,pretrained_emb)
+        decoder = DecoderAttention(self.__C)
 
-        net = Net(encoder,decoder,vocab)
+        net = PointerGenerator(self.__C,vocab,encoder,decoder)
         print("=== Total model parameters: ",count_parameters(net))
 
         data_size = len(self.dataset)
@@ -32,7 +32,7 @@ class Execution():
         net.train()
         net.cuda()
 
-        net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
+        # net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
 
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, net.parameters()),
@@ -98,8 +98,8 @@ class Execution():
 
         net = Net(encoder,decoder,vocab)
         print("=== Total model parameters: ",count_parameters(net))
-        state_dict_path = '/home/phuc/Workspace/Thesis/answer-generation/ckpts/ckpt_9177283/epoch10.pkl'
-        # net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
+        state_dict_path = '/home/phuc/Workspace/Thesis/answer-generation/ckpts/ckpt_8294539/epoch10.pkl'
+        net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
         state_dict = torch.load(state_dict_path)
         net.load_state_dict(torch.load(state_dict_path))
         net.eval()
@@ -115,7 +115,7 @@ class Execution():
                                 )
         dataloader = DataLoader(self.dataset,
                                 batch_size=self.__C.BATCH_SIZE,
-                                shuffle=True,
+                                shuffle=False,
                                 pin_memory=self.__C.PIN_MEMORY,
                                 num_workers = self.__C.NUM_WORKERS)
 
@@ -137,7 +137,7 @@ class Execution():
                 preds = net(question_feat,answer_feat,tgt_feat)
                 # tgt_feat = tgt_feat.T
                 preds = preds.cpu().data.numpy()
-                for pred in preds:
+                for pre...d in preds:
                     out = np.argmax(pred,axis=1)
                     sent = [self.dataset.vocab.get_ix_to_token(index) for index in out]
                     print(' '.join(sent))
@@ -145,7 +145,7 @@ class Execution():
 
     def run(self,run_mode):
         if run_mode == 'train':
-            self.train()
+            self.infer()
         
         if run_mode == 'test':
             self.train()

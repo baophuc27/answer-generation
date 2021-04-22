@@ -29,7 +29,7 @@ class Configs(PATH):
 
         self.ENCODER_LSTM_LAYERS = 4
 
-        self.ENCODER_HIDDEN_DIM = 512
+        self.HIDDEN_DIM = 512
 
         self.BIDIRECTIONAL_LSTM = True
 
@@ -45,13 +45,17 @@ class Configs(PATH):
 
         self.DECODER_LSTM_LAYERS = 4
 
-        self.DECODER_HIDDEN_DIM = 512
-
-        self.IS_COVERAGE = True
+        self.USE_COVERAGE = True
 
         self.OPT_BETAS = (0.9, 0.98)
 
         self.OPT_EPS = 1e-9
+
+        self.BEAM_SIZE = 3
+
+        self.MIN_DEC_STEPS = 5
+
+        self.NUM_RETURN_SEQ = 1
         
     def parse_to_dict(self,args):
         args_dict = {}

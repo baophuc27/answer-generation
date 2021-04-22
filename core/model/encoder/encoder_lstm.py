@@ -22,25 +22,24 @@ class EncoderLSTM(EncoderBase):
         self.embedding = nn.Embedding.from_pretrained(pretrained_emb)
         self.embedding.weight.requires_grad = False
         self.embedding.cuda()
-        num_directions = 2 if __C.BIDIRECTIONAL_LSTM else 1
 
         self.lstm_ques = nn.LSTM(input_size=__C.WORD_EMBED_SIZE,
-                                hidden_size=__C.ENCODER_HIDDEN_DIM,
+                                hidden_size=__C.HIDDEN_DIM,
                                 num_layers=__C.ENCODER_LSTM_LAYERS,
                                 batch_first=True,
                                 bidirectional=__C.BIDIRECTIONAL_LSTM)
 
         # LSTM's cell parameters for answer should be different from ques's lstm cell. Can tune them later
         self.lstm_ans = nn.LSTM(input_size=__C.WORD_EMBED_SIZE,
-                                hidden_size=__C.ENCODER_HIDDEN_DIM,
+                                hidden_size=__C.HIDDEN_DIM,
                                 num_layers=__C.ENCODER_LSTM_LAYERS,
                                 batch_first=True,
                                 bidirectional=__C.BIDIRECTIONAL_LSTM)
 
-        # self.fc = nn.Linear(in_features=__C.ENCODER_HIDDEN_DIM*num_directions + __C.ENCODER_HIDDEN_DIM*num_directions
-        #                     ,out_features=__C.DECODER_HIDDEN_DIM)
-        self.reduce_h = nn.Linear(in_features=2*__C.ENCODER_HIDDEN_DIM,out_features=__C.ENCODER_HIDDEN_DIM)
-        self.reduce_c = nn.Linear(in_features=2*__C.ENCODER_HIDDEN_DIM,out_features=__C.ENCODER_HIDDEN_DIM)
+        # self.fc = nn.Linear(in_features=__C.HIDDEN_DIM*num_directions + __C.HIDDEN_DIM*num_directions
+        #                     ,out_features=__C.HIDDEN_DIM)
+        self.reduce_h = nn.Linear(in_features=2*__C.HIDDEN_DIM,out_features=__C.HIDDEN_DIM)
+        self.reduce_c = nn.Linear(in_features=2*__C.HIDDEN_DIM,out_features=__C.HIDDEN_DIM)
 
         self.dropout = nn.Dropout(p=__C.DROPOUT_RATE)
 
@@ -62,9 +61,9 @@ class EncoderLSTM(EncoderBase):
         
         cell = torch.cat([cell_question,cell_answer],-1).contiguous()
 
-        # hidden = hidden.view(,2*self.__C.ENCODER_HIDDEN_DIM)
+        # hidden = hidden.view(,2*self.__C.HIDDEN_DIM)
 
-        # cell = cell.view(-1,2*self.__C.ENCODER_HIDDEN_DIM)
+        # cell = cell.view(-1,2*self.__C.HIDDEN_DIM)
 
         hidden = self.dropout(F.relu(self.reduce_h(hidden)))
 
