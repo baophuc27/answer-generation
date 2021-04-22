@@ -23,13 +23,13 @@ class Configs(PATH):
 
         self.QUES_PADDING_TOKEN = 30
 
-        self.BATCH_SIZE = 256
+        self.BATCH_SIZE = 7
 
         self.ANS_PADDING_TOKEN = 10
 
         self.ENCODER_LSTM_LAYERS = 4
 
-        self.HIDDEN_DIM = 512
+        self.HIDDEN_DIM = 16
 
         self.BIDIRECTIONAL_LSTM = True
 
@@ -56,6 +56,8 @@ class Configs(PATH):
         self.MIN_DEC_STEPS = 5
 
         self.NUM_RETURN_SEQ = 1
+
+        self.COV_WEIGHT = 0.3
         
     def parse_to_dict(self,args):
         args_dict = {}

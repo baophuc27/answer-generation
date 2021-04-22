@@ -20,7 +20,7 @@ def process_data(ques,token_to_ix,max_token):
         if word in token_to_ix:
             data_idx[ix] = token_to_ix[word]
         else:
-            data_idx[ix] = token_to_ix['<unk>']
+            data_idx[ix] = token_to_ix['[UNK]']
         
         if ix+1 == max_token:
             break
@@ -28,8 +28,8 @@ def process_data(ques,token_to_ix,max_token):
     return data_idx
 
 def insert_sentence_token(features,token_to_ix):
-    sos = np.insert(features,0,token_to_ix['<sos>'])
-    return np.append(sos,token_to_ix['<eos>'])
+    sos = np.insert(features,0,token_to_ix['[START]'])
+    return np.append(sos,token_to_ix['[STOP]'])
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)

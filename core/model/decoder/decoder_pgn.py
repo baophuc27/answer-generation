@@ -9,7 +9,7 @@ class Attention(nn.Module):
         self.__C = __C
         self.v = nn.Linear(in_features=2*self.__C.HIDDEN_DIM,out_features=1,bias=False)
         self.enc_proj = nn.Linear(in_features = 2*self.__C.HIDDEN_DIM,out_features=2*self.__C.HIDDEN_DIM,bias=False)
-        self.dec_proj = nn.Linear(in_features = self.__C.HIDDEN_DIM,out_features=2.self.__C.HIDDEN_DIM,bias=True)
+        self.dec_proj = nn.Linear(in_features = self.__C.HIDDEN_DIM,out_features=2*self.__C.HIDDEN_DIM,bias=True)
         
         if self.__C.USE_COVERAGE:
             self.w_c = nn.Linear(1,self.__C.HIDDEN_DIM,bias=False)

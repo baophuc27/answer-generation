@@ -41,11 +41,32 @@ class MyDataset(data.Dataset):
         ques_feat_iter = insert_sentence_token(ques_feat_iter,self.vocab.token_to_ix)
         tgt_feat_iter = insert_sentence_token(ans_feat_iter,self.vocab.token_to_ix)
 
-        return torch.from_numpy(ques_feat_iter), \
-               torch.from_numpy(ans_feat_iter), \
-               torch.from_numpy(tgt_feat_iter) 
+        return {"question_feat":torch.from_numpy(ques_feat_iter),
+               "answer_feat":torch.from_numpy(ans_feat_iter), 
+               "tgt_feat":torch.from_numpy(tgt_feat_iter) , 
+                "question_text":ques,
+                "answer_text":ans,
+                "tgt_text":tgt}
 
-
+    @staticmethod
+    def my_collate(batch):
+        pad_id = 3
+        ques = [item["question_text"] for item in batch]
+        ans = [item["answer_text"] for item in batch]
+        tgt = [item["tgt_text"] for item in batch]
+        question_feat = torch.cat([item["question_feat"].unsqueeze(1) for item in batch],dim=-1)
+        answer_feat = torch.cat([item["answer_feat"].unsqueeze(1) for item in batch],dim=-1)
+        tgt_feat = torch.cat([item["tgt_feat"].unsqueeze(1) for item in batch],dim=-1)
+        ques_pad_mask = torch.cat([(item["question_feat"]==pad_id).unsqueeze(1) for item in batch],dim=-1)
+        return {
+            "question_text":ques,
+            "answer_text":ans,
+            "tgt_text":tgt,
+            "question_feat" : question_feat,
+            "answer_feat" : answer_feat,
+            "tgt_feat" : tgt_feat,
+            "ques_pad_mask": ques_pad_mask
+        }
 
     def __len__(self):
         return self.data_size

@@ -2,7 +2,7 @@ from cfgs.base_configs import Configs
 import numpy as np
 import argparse
 import os
-from core.exec import  Execution
+from core.exec import Execution
 
 def parse_args():
     """
