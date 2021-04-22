@@ -30,7 +30,7 @@ class Execution():
         net.train()
         net.cuda()
 
-        # net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
+        net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
 
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, net.parameters()),

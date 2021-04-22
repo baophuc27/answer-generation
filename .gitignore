@@ -1,6 +1,7 @@
 en_vectors_web_lg-2.1.0.tar.gz
 datasets/
+__pycache__/
 core/data/__pycache__
-*/__pycache__/*
+*/__pycache__/*.pyc
 ckpts/
 nohup.out
