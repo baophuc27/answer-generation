@@ -23,11 +23,11 @@ class Configs(PATH):
 
         self.QUES_PADDING_TOKEN = 30
 
-        self.BATCH_SIZE = 128
+        self.BATCH_SIZE = 256
 
         self.ANS_PADDING_TOKEN = 10
 
-        self.ENCODER_LSTM_LAYERS = 3
+        self.ENCODER_LSTM_LAYERS = 4
 
         self.ENCODER_HIDDEN_DIM = 512
 
@@ -43,7 +43,7 @@ class Configs(PATH):
 
         self.MAX_EPOCH = 10
 
-        self.DECODER_LSTM_LAYERS = 3
+        self.DECODER_LSTM_LAYERS = 4
 
         self.DECODER_HIDDEN_DIM = 512
 

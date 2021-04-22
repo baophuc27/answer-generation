@@ -31,7 +31,7 @@ class Vocab(object):
         counter = Counter(total_tokens)
         # Only token with at least 10 occurrences can be in vocab
         filter_tokens =  list(filter(lambda x : counter[x] > 10 , counter))
-        for token in [STOP_DECODING,START_DECODING,PAD_TOKEN,UNKNOWN_TOKEN]:
+        for token in [PAD_TOKEN,UNKNOWN_TOKEN,STOP_DECODING,START_DECODING]:
             filter_tokens.insert(0,token)
 
         for ix,token in enumerate(filter_tokens):

@@ -24,8 +24,6 @@ class Net(nn.Module):
         for i in range(1, target_len):
             output, hidden = self.decoder(input,decoder_hidden)
             input = output.argmax(1)
-            if i == 1:
-                input = target[:,0]
             decoder_hidden= hidden
             outputs[i] = output
         

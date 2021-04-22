@@ -39,7 +39,9 @@ class EncoderLSTM(EncoderBase):
 
         # self.fc = nn.Linear(in_features=__C.ENCODER_HIDDEN_DIM*num_directions + __C.ENCODER_HIDDEN_DIM*num_directions
         #                     ,out_features=__C.DECODER_HIDDEN_DIM)
-        
+        self.reduce_h = nn.Linear(in_features=2*__C.ENCODER_HIDDEN_DIM,out_features=__C.ENCODER_HIDDEN_DIM)
+        self.reduce_c = nn.Linear(in_features=2*__C.ENCODER_HIDDEN_DIM,out_features=__C.ENCODER_HIDDEN_DIM)
+
         self.dropout = nn.Dropout(p=__C.DROPOUT_RATE)
 
     def forward(self,question,answer):
@@ -48,25 +50,25 @@ class EncoderLSTM(EncoderBase):
         question_embedding = self.embedding(question)
         answer_embedding = self.embedding(answer)
 
-        outputs_question , (hidden_question,cell_question) = self.lstm_ques(question_embedding)
+        _ , (hidden_question,cell_question) = self.lstm_ques(question_embedding)
         
-        outputs_answer , (hidden_answer,cell_answer) = self.lstm_ans(answer_embedding)
+        _ , (hidden_answer,cell_answer) = self.lstm_ans(answer_embedding)
 
         #outputs = [src len, batch size, hid dim * n directions]
         #hidden = [n layers * n directions, batch size, hid dim]
         #cell = [n layers * n directions, batch size, hid dim]
 
-        # outputs = torch.cat([outputs_question,outputs_answer],2).contiguous()
-
-        hidden = torch.cat([hidden_question,hidden_answer],2).contiguous()
+        hidden = torch.cat([hidden_question,hidden_answer],-1).contiguous()
         
-        cell = torch.cat([cell_question,cell_answer],2).contiguous()
+        cell = torch.cat([cell_question,cell_answer],-1).contiguous()
 
-        # outputs = outputs.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
+        # hidden = hidden.view(,2*self.__C.ENCODER_HIDDEN_DIM)
 
-        # hidden = hidden.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
+        # cell = cell.view(-1,2*self.__C.ENCODER_HIDDEN_DIM)
 
-        # cell = cell.view(-1,2*self.__C.ENCODER_HIDDEN_DIM).unsqueeze(0)
+        hidden = self.dropout(F.relu(self.reduce_h(hidden)))
+
+        cell = self.dropout(F.relu(self.reduce_c(cell)))
 
         return (hidden,cell)
         
