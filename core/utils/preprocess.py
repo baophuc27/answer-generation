@@ -33,6 +33,7 @@ def convert_to_json(input_file,output_file, data_type):
     data[data_type] =[]
     with open(input_file,'r') as f, open(output_file, "w") as out_f:
         for ix,line in enumerate(f):
-            data[data_type].append({ix: line[:-2]})
+            line = line.replace('\n',"").replace("<s>","").replace("</s>","").replace("<blank>","").strip()
+            data[data_type].append({ix: line})
         json.dump(data,out_f,ensure_ascii=False)
 

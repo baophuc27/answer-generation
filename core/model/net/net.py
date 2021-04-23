@@ -17,7 +17,7 @@ class Net(nn.Module):
         target_len = target.shape[1]
 
         decoder_hidden = self.encoder(question,answer)
-        outputs = torch.zeros(target_len,batch_size,self.vocab.__len__()).cuda()
+        outputs = torch.zeros(target_len,batch_size,self.vocab.__len__())
         input = target[:,0]
         for i in range(1, target_len):
             output, hidden = self.decoder(input,decoder_hidden)

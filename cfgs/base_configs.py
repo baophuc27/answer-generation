@@ -27,7 +27,7 @@ class Configs(PATH):
 
         self.ANS_PADDING_TOKEN = 10
 
-        self.ENCODER_LSTM_LAYERS = 4
+        self.ENCODER_LSTM_LAYERS = 1
 
         self.HIDDEN_DIM = 16
 
@@ -58,6 +58,8 @@ class Configs(PATH):
         self.NUM_RETURN_SEQ = 1
 
         self.COV_WEIGHT = 0.3
+
+        self.TGT_MAX_TRAIN = 15
         
     def parse_to_dict(self,args):
         args_dict = {}

@@ -11,7 +11,7 @@ from core.model.net.pgn import PointerGenerator
 from core.model.encoder.encoder_lstm import EncoderLSTM
 from core.model.decoder.decoder_lstm import DecoderLSTM
 from core.model.decoder.decoder_pgn import DecoderAttention
-from core.data.utils import count_parameters
+from core.data.utils import count_parameters,get_pretrained_emd_OOV
 from core.model.opt import WarmupOptimizer
 from core.model.loss import Loss
 class Execution():
@@ -21,20 +21,19 @@ class Execution():
         self.loss = Loss(__C)
 
     def train(self):
-        pretrained_emb = torch.FloatTensor(self.dataset.pretrained_emb)
         vocab = self.dataset.vocab
-        encoder = EncoderLSTM(pretrained_emb,self.__C)
-        decoder = DecoderAttention(self.__C)
+        encoder = EncoderLSTM(self.dataset.pretrained_emb,self.__C)
+        decoder = DecoderAttention(self.dataset.pretrained_emb,self.__C)
 
-        net = PointerGenerator(self.__C,vocab,encoder,decoder)
+        net = PointerGenerator(self.__C,vocab,encoder,decoder,self.dataset.pretrained_emb)
         print("=== Total model parameters: ",count_parameters(net))
 
         data_size = len(self.dataset)
 
         net.train()
-        net.cuda()
+        # net.cuda()
 
-        # net = nn.DataParallel(net, device_ids=["cuda:0","cuda:1","cuda:2","cuda:3"])
+        # net = nn.DataParallel(net, device_ids=["cuda:0"])
 
         criterion = self.loss
         optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, net.parameters()),
@@ -58,18 +57,24 @@ class Execution():
                 optimizer.zero_grad()
 
 
-                question_feat = batch["question_feat"].cuda()
-                answer_feat = batch["answer_feat"].cuda()
-                tgt_feat = batch["tgt_feat"].cuda()
+                question_feat = batch["question_feat"]
+                answer_feat = batch["answer_feat"]
+                tgt_feat = batch["tgt_feat"]
                 
                 
                 question_text = batch["question_text"]
                 answer_text = batch["answer_text"]
                 tgt_text = batch["tgt_text"]
                 ques_pad_mask = batch["ques_pad_mask"]
-
-                dec_input = tgt_feat[0,:]
-                pred = net(question_feat,question_text,answer_feat,answer_text,ques_pad_mask,30,dec_input,5)
+                oovs = batch["oovs"]
+                enc_len = batch["enc_len"]
+                dec_input = tgt_feat[:,:-1]
+                dec_tgt = tgt_feat[:,1:]
+                max_oov_len = batch["max_oov_len"]
+                oov_embeddings = torch.FloatTensor(get_pretrained_emd_OOV(oovs))
+                pred = net(question_feat,question_text,answer_feat,answer_text,ques_pad_mask,enc_len,dec_input,max_oov_len)
+                print(pred)
+                return
                 # print("\r[epoch %2d][step %4d/%4d] loss: %.4f" % (
                 #             epoch + 1,
                 #             step,
@@ -145,7 +150,7 @@ class Execution():
 
     def run(self,run_mode):
         if run_mode == 'train':
-            self.infer()
+            self.train()
         
         if run_mode == 'test':
             self.train()

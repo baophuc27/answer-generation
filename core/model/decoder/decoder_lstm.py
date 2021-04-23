@@ -15,7 +15,7 @@ class DecoderLSTM(DecoderBase):
         super(DecoderLSTM,self).__init__()
         self.__C = __C
         self.embedding = nn.Embedding.from_pretrained(pretrained_embedding)
-        self.embedding.cuda()
+
 
         num_directions = 2 if self.__C.BIDIRECTIONAL_LSTM else 1
         if self.__C.DROPOUT_RATE:

@@ -19,9 +19,8 @@ class EncoderLSTM(EncoderBase):
         super(EncoderBase,self).__init__()
         assert pretrained_emb is not None
         self.__C= __C
-        self.embedding = nn.Embedding.from_pretrained(pretrained_emb)
+        self.embedding = nn.Embedding.from_pretrained(pretrained_emb,freeze=False)
         self.embedding.weight.requires_grad = False
-        self.embedding.cuda()
 
         self.lstm_ques = nn.LSTM(input_size=__C.WORD_EMBED_SIZE,
                                 hidden_size=__C.HIDDEN_DIM,
@@ -49,9 +48,9 @@ class EncoderLSTM(EncoderBase):
         question_embedding = self.embedding(question)
         answer_embedding = self.embedding(answer)
 
-        _ , (hidden_question,cell_question) = self.lstm_ques(question_embedding)
+        output_question , (hidden_question,cell_question) = self.lstm_ques(question_embedding)
         
-        _ , (hidden_answer,cell_answer) = self.lstm_ans(answer_embedding)
+        output_answer , (hidden_answer,cell_answer) = self.lstm_ans(answer_embedding)
 
         #outputs = [src len, batch size, hid dim * n directions]
         #hidden = [n layers * n directions, batch size, hid dim]
@@ -69,5 +68,7 @@ class EncoderLSTM(EncoderBase):
 
         cell = self.dropout(F.relu(self.reduce_c(cell)))
 
-        return (hidden,cell)
+        output = torch.cat([output_question,output_answer],1).contiguous().permute((1,0,2))
+
+        return output, (hidden,cell)
         
