@@ -43,7 +43,7 @@ class Execution():
                                 )
         dataloader = DataLoader(self.dataset,
                                 batch_size=self.__C.BATCH_SIZE,
-                                shuffle=False,
+                                shuffle=True,
                                 pin_memory=self.__C.PIN_MEMORY,
                                 num_workers = self.__C.NUM_WORKERS,collate_fn = MyDataset.my_collate)
 
@@ -72,8 +72,12 @@ class Execution():
                 dec_tgt = tgt_feat[:,1:]
                 max_oov_len = batch["max_oov_len"]
                 oov_embeddings = torch.FloatTensor(get_pretrained_emd_OOV(oovs))
-                pred = net(question_feat,question_text,answer_feat,answer_text,ques_pad_mask,enc_len,dec_input,max_oov_len)
-                print(pred)
+                # pred = net(question_feat,question_text,answer_feat,answer_text,ques_pad_mask,enc_len,dec_input,max_oov_len)
+                for i in range(len(question_text)):
+                    print("Question :"+list(question_text[i].values())[0])
+                    print("Answer :"+list(answer_text[i].values())[0])
+                    print("Target :"+list(tgt_text[i].values())[0])
+                    print("\n")
                 return
                 # print("\r[epoch %2d][step %4d/%4d] loss: %.4f" % (
                 #             epoch + 1,
